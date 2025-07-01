@@ -1,11 +1,10 @@
 import Post from '../models/Post.js';
+
 export const routes = function(app){
 
     app.get('', async (req, res)=>{
-        console.log('getting!!!');
         const posts = await Post.find({});
-        console.log(posts);
-        res.send(posts);
+        res.json(posts);
     });
 
     app.post('/register', (req, res)=>{
@@ -38,5 +37,22 @@ export const routes = function(app){
                 email:email
             }
         );
-    })
+    });
+    
+    app.post('/create', async (req, res)=>{
+        console.log(req.body);
+        try{
+            const payload = {
+                title: req.body.title, 
+                body: req.body.body,
+                email: 'bat@mail.com',
+                username: 'bat'
+            };
+            const response = await Post.create(payload);
+            console.log(response);
+            res.send('win!');
+        }catch(error){
+            console.log(error);
+        }
+    });
 };
