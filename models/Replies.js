@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-const PostSchema = new Schema({
-    title:{
+const ReplySchema = new Schema({
+    replyTo:{
         type:String,
         required:true,
     },
-    body:{
+    comment:{
         type:String,
         required:true,
     },
@@ -27,6 +27,6 @@ const PostSchema = new Schema({
     },
 });
 
-const Post = mongoose.model('Post', PostSchema);
+const Reply = mongoose.model('Reply', ReplySchema);
 
-export default Post;
+export default Reply;
