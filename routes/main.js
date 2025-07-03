@@ -29,6 +29,16 @@ export const routes = function(app){
         res.json(posts);
     });
 
+    app.get('/dashboard', async (req, res)=>{
+        const user = await User.findOne({ username: req.cookies.username });
+        const posts = await Post.find( {username: req.cookies.username });
+        const userDetails = {
+            user: user,
+            posts: posts
+        };
+        res.json(userDetails);
+    });
+
     app.get('/blog/:id', async (req, res)=>{
         const blogPost = await Post.find({ _id: req.params.id});
         const replies = await Reply.find({replyTo:req.params.id});
@@ -117,5 +127,5 @@ export const routes = function(app){
         res.clearCookie('email', { httpOnly: true });
         res.clearCookie('username', { httpOnly: true});
         return res.json('logged out');
-    })
+    });
 };
