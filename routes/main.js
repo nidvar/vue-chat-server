@@ -11,27 +11,42 @@ export const routes = function(app){
 
     const authMiddleware = async function(req, res, next){
         const token = req.cookies.token;
-        console.log(token);
         if(!token){
-            return res.sendStatus(401);
+            return res.json({message: 'no token'});
         };
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             req.user = decoded;
             next();
         } catch (err) {
-            return res.sendStatus(403);
+            console.log(err);
+            return res.json({authenticated: false});
         }
     };
+
+    app.get('/auth', authMiddleware, (req, res)=>{
+        return res.json({authenticated: true});
+    });
+
+    app.delete('/delete', authMiddleware, async (req, res)=>{
+        const post = await Post.findOne({_id: req.body.blogId});
+        if(post){
+            await Post.deleteOne({ _id: req.body.blogId });
+            res.json({ message: 'deleted'});
+        }else{
+            res.json({ message: 'Post does not exist' });
+        };
+    });
 
     app.get('/', async (req, res)=>{
         const posts = await Post.find({});
         res.json(posts);
     });
 
-    app.get('/dashboard', async (req, res)=>{
+    app.get('/dashboard', authMiddleware, async (req, res)=>{
         const user = await User.findOne({ username: req.cookies.username });
-        const posts = await Post.find( {username: req.cookies.username });
+        const posts = await Post.find({username: req.cookies.username });
+
         const userDetails = {
             user: user,
             posts: posts
@@ -58,10 +73,10 @@ export const routes = function(app){
                 username: req.cookies.username
             };
             await Post.create(payload);
-            res.send('blog created');
+            res.json({ message: 'blog created '});
         }catch(error){
             console.log(error);
-            return res.json(error);
+            return res.json({ message: error});
         }
     });
 
@@ -74,28 +89,28 @@ export const routes = function(app){
                 username: req.cookies.username
             };
             await Reply.create(payload);
-            return res.json('comment added');
+            return res.json({message:'comment added'});
         }catch(error){
             console.log(error);
-            return res.json(error);
+            return res.json({message:error});
         }
     });
 
     app.post('/login', async (req, res)=>{
-        console.log(req.body)
         try{
             const user = await User.findOne({email:req.body.email});
             if(user == null){
-                console.log('no user found')
-                return res.json('no user found');
+                return res.json({loggedIn: false, error:'no user found'});
             }else{
-                const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET);
-
+                const validatePassword = await bcrypt.compare(req.body.password, user.password);
+                if(!validatePassword){
+                    return res.json({loggedIn: false, error: 'Incorrect password'})
+                };
+                const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: '10m'});
                 res.cookie('token', token, {httpOnly: true});
                 res.cookie('email', req.body.email, {httpOnly: true});
                 res.cookie('username', user.username, {httpOnly: true});
-
-                return res.json({token: token});
+                return res.json({loggedIn: true});
             };
         }catch(err){
             console.log(err);
@@ -116,9 +131,9 @@ export const routes = function(app){
                     email: req.body.email
                 }
             );
-            res.json('win!');
+            res.json({ message: 'user created'});
         }else{
-            return res.json('User exists');
+            return res.json({message: 'user exists'});
         }
     });
 
@@ -126,6 +141,6 @@ export const routes = function(app){
         res.clearCookie('token', { httpOnly: true});
         res.clearCookie('email', { httpOnly: true });
         res.clearCookie('username', { httpOnly: true});
-        return res.json('logged out');
+        return res.json({message: 'logged out'});
     });
 };

@@ -22,5 +22,5 @@ app.use(express.urlencoded({ extended: true }));
 routes(app);
 
 app.listen(8080, ()=>{
-    console.log('server on port 8080');
+  console.log('server on port 8080');
 })
