@@ -127,7 +127,7 @@ export const routes = function(app){
                 {
                     username: req.body.username, 
                     password: hashedPassword, 
-                    admin: false, 
+                    admin: false,
                     email: req.body.email,
                     profilePic: req.body.profilePic
                 }

@@ -15,8 +15,8 @@ const UserSchema = new Schema({
     },
     profilePic: {
         data: Buffer,
-        contentType: String,
-        required: false
+        type: String,
+        required:false
     },
     admin:{
         type:Boolean,
