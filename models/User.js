@@ -13,6 +13,11 @@ const UserSchema = new Schema({
         type:String,
         required:true,
     },
+    profilePic: {
+        data: Buffer,
+        contentType: String,
+        required: false
+    },
     admin:{
         type:Boolean,
         required:false,

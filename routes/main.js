@@ -73,7 +73,7 @@ export const routes = function(app){
                 username: req.cookies.username
             };
             await Post.create(payload);
-            res.json({ message: 'blog created '});
+            res.json({ message: 'blog created'});
         }catch(error){
             console.log(error);
             return res.json({ message: error});
@@ -128,7 +128,8 @@ export const routes = function(app){
                     username: req.body.username, 
                     password: hashedPassword, 
                     admin: false, 
-                    email: req.body.email
+                    email: req.body.email,
+                    profilePic: req.body.profilePic
                 }
             );
             res.json({ message: 'user created'});
