@@ -25,7 +25,7 @@ export const routes = function(app){
     };
 
     app.get('/auth', authMiddleware, (req, res)=>{
-        return res.json({authenticated: true});
+        return res.json({authenticated: true, email: req.user.email});
     });
 
     app.delete('/delete', authMiddleware, async (req, res)=>{
@@ -106,7 +106,8 @@ export const routes = function(app){
                 if(!validatePassword){
                     return res.json({loggedIn: false, error: 'Incorrect password'})
                 };
-                const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: '10m'});
+                const token = jwt.sign({email: user.email, userId: user._id}, process.env.JWT_SECRET, {expiresIn: '10m'});
+                
                 res.cookie('token', token, {httpOnly: true});
                 res.cookie('email', req.body.email, {httpOnly: true});
                 res.cookie('username', user.username, {httpOnly: true});
@@ -137,6 +138,19 @@ export const routes = function(app){
             return res.json({message: 'user exists'});
         }
     });
+
+    app.put('/picture' , async (req, res)=>{
+        const user = await User.findOne({ email: req.cookies.email});
+        if(user){
+            await User.updateOne(
+                { email: req.cookies.email },
+                { $set: { profilePic: req.body.profilePic } },
+            );
+            return res.json({message: 'backend recieved'})
+        }else{
+            return res.json({message: 'fail'})
+        }
+    })
 
     app.get('/logout', (req, res)=>{
         res.clearCookie('token', { httpOnly: true});
