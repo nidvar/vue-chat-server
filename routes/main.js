@@ -154,8 +154,13 @@ export const routes = function(app){
                     return res.json({loggedIn: false, error: 'Incorrect password'})
                 };
                 const token = jwt.sign({email: user.email, userId: user._id}, process.env.JWT_SECRET, {expiresIn: '10m'});
-                
-                res.cookie('token', token, {httpOnly: true});
+
+                res.cookie('token', token, {
+                  httpOnly: true,
+                  secure: true,
+                  sameSite: 'None',
+                  maxAge: 1000 * 60 * 60 * 24, // 1 day (optional)
+                });
                 res.cookie('email', req.body.email, {httpOnly: true});
                 res.cookie('username', user.username, {httpOnly: true});
                 return res.json({loggedIn: true});
