@@ -29,13 +29,23 @@ export const routes = function(app){
     });
 
     app.delete('/delete', authMiddleware, async (req, res)=>{
-        const post = await Post.findOne({_id: req.body.blogId});
-        if(post){
-            await Post.deleteOne({ _id: req.body.blogId });
-            res.json({ message: 'deleted'});
+        if(req.body.comment){
+            const comment = await Reply.findOne({_id: req.body.blogId});
+            if(comment){
+                await Reply.deleteOne({ _id: req.body.blogId });
+                res.json({ message: 'deleted'});
+            }else{
+                res.json({ message: 'Post does not exist' });
+            };
         }else{
-            res.json({ message: 'Post does not exist' });
-        };
+            const post = await Post.findOne({_id: req.body.blogId});
+            if(post){
+                await Post.deleteOne({ _id: req.body.blogId });
+                res.json({ message: 'deleted'});
+            }else{
+                res.json({ message: 'Post does not exist' });
+            };
+        }
     });
 
     app.get('/', async (req, res)=>{
