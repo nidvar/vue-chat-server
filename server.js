@@ -11,7 +11,7 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL,
   credentials: true
 }));
 
@@ -21,6 +21,8 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 routes(app);
 
-app.listen(8080, ()=>{
-  console.log('server on port 8080');
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, ()=>{
+  console.log('server on port ' + PORT);
 })
