@@ -110,6 +110,23 @@ export const routes = function(app){
         }
     });
 
+    app.put('/update', authMiddleware, async (req, res)=>{
+        const post = await Post.findOne({ _id: req.body.id})
+        if(post){
+            await Post.findByIdAndUpdate(
+                req.body.id,
+                { 
+                    title: req.body.blogTitle,
+                    body: req.body.blogBody
+                },
+                { new: true }
+            );
+            return res.json({message: 'updated'})
+        }else{
+            return res.json({message: 'fail'})
+        }
+    })
+
     app.post('/comment', authMiddleware, async (req, res)=>{
         try{
             const payload = {
