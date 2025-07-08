@@ -161,8 +161,25 @@ export const routes = function(app){
                   sameSite: 'None',
                   maxAge: 1000 * 60 * 60 * 24, // 1 day (optional)
                 });
-                res.cookie('email', req.body.email, {httpOnly: true});
-                res.cookie('username', user.username, {httpOnly: true});
+
+                res.cookie('token', token, {
+                  httpOnly: true,
+                  secure: true,
+                  sameSite: 'None',
+                  maxAge: 1000 * 60 * 60 * 24,
+                });
+                
+                res.cookie('email', req.body.email, {
+                  httpOnly: true,
+                  secure: true,
+                  sameSite: 'None',
+                });
+                
+                res.cookie('username', user.username, {
+                  httpOnly: true,
+                  secure: true,
+                  sameSite: 'None',
+                });
                 return res.json({loggedIn: true});
             };
         }catch(err){
