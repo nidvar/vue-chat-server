@@ -40,7 +40,18 @@ export const routes = function(app){
 
     app.get('/', async (req, res)=>{
         const posts = await Post.find({});
-        res.json(posts);
+        const userEmails = [];
+        posts.forEach((item)=>{
+            if(!userEmails.includes(item.email)){
+                userEmails.push(item.email);
+            }
+        });
+        const users = await User.find({ email: { $in: userEmails } })
+        const data = {
+            posts: posts,
+            users: users
+        }
+        res.json(data);
     });
 
     app.get('/dashboard', authMiddleware, async (req, res)=>{
@@ -55,27 +66,21 @@ export const routes = function(app){
     });
 
     app.get('/blog/:id', async (req, res)=>{
-
         const blogPost = await Post.findOne({ _id: req.params.id });
         const replies = await Reply.find({ replyTo:req.params.id });
-
         const userEmails = [];
-
         userEmails.push(blogPost.email);
-
         replies.forEach((item)=>{
             if(!userEmails.includes(item.email)){
                 userEmails.push(item.email);
             };
         });
         const allInvolvedUsers = await User.find({ email: { $in: userEmails } });
-
         const data = {
             blogPost: blogPost,
             replies: replies,
             allUsers: allInvolvedUsers
         };
-
         res.json(data);
     });
 
