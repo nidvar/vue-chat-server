@@ -215,9 +215,21 @@ export const routes = function(app){
     })
 
     app.get('/logout', (req, res)=>{
-        res.clearCookie('token', { httpOnly: true});
-        res.clearCookie('email', { httpOnly: true });
-        res.clearCookie('username', { httpOnly: true});
+        res.clearCookie('token', {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'None',
+        });
+        res.clearCookie('email', {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'None',
+        });
+        res.clearCookie('username', {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'None',
+        });
         return res.json({message: 'logged out'});
     });
 };
