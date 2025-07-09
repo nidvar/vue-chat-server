@@ -10,7 +10,7 @@ connectDB();
 
 const app = express();
 
-const allowedOrigins = ['https://mevn-blog.vercel.app'];
+const allowedOrigins = ['https://mevn-blog.vercel.app', 'http://localhost:5173',];
 
 app.use(cors({
   origin: function (origin, callback) {
