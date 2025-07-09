@@ -201,7 +201,7 @@ export const routes = function(app){
         }
     });
 
-    app.put('/picture' , async (req, res)=>{
+    app.put('/picture', authMiddleware, async (req, res)=>{
         const user = await User.findOne({ email: req.cookies.email});
         if(user){
             await User.updateOne(
